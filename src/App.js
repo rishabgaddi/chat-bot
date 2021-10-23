@@ -1,23 +1,36 @@
-import logo from './logo.svg';
 import './App.css';
 
+import { useState } from 'react';
+import { Switch, Route, Redirect } from 'react-router';
+import Home from './components/Home';
+import Chat from './components/Chat';
+
 function App() {
+  const [loggedInUser, setloggedInUser] = useState(() => {
+    return localStorage.getItem('user');
+  });
+
+  const handleUser = (user) => {
+    setloggedInUser(user);
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Switch>
+        <Route exact path="/"
+          render={() => {
+            return (
+              loggedInUser ? <Redirect to="/chat" /> : <Redirect to="/login" />
+            )
+          }}
+        />
+        <Route exact path="/login">
+          <Home userHandler={handleUser} user={loggedInUser} />
+        </Route>
+        <Route exact path="/chat">
+          <Chat user={loggedInUser} />
+        </Route>
+      </Switch>
     </div>
   );
 }
